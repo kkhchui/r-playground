@@ -70,8 +70,63 @@
   border: 1px solid #D8DEE9;
   border-radius: 6px;
 }
+
+
+/* Nord-themed R code editor */
+
+.CodeMirror {
+  height: 180px;
+  border: 1px solid #D8DEE9;
+  border-radius: 7px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 15px;
+  line-height: 1.5;
+  background: #ECEFF4;
+  color: #2E3440;
+}
+
+.CodeMirror-gutters {
+  background: #E5E9F0;
+  border-right: 1px solid #D8DEE9;
+}
+
+.CodeMirror-linenumber {
+  color: #4C566A;
+}
+
+.CodeMirror-cursor {
+  border-left: 2px solid #5E81AC;
+}
+
+.CodeMirror-selected {
+  background: #D8DEE9 !important;
+}
+
+/* Syntax colors */
+.cm-s-default .cm-comment  { color: #6A768A; }
+.cm-s-default .cm-string   { color: #A05A62; }
+.cm-s-default .cm-number   { color: #8B6BA8; }
+.cm-s-default .cm-keyword  { color: #5E81AC; }
+.cm-s-default .cm-operator { color: #5E81AC; }
+.cm-s-default .cm-variable { color: #2E3440; }
+.cm-s-default .cm-def      { color: #487C86; }
+.cm-s-default .cm-builtin  { color: #487C86; }
+.cm-s-default .cm-atom     { color: #8B6BA8; }
     
   </style>
+
+<!-- CodeMirror editor -->
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js">
+</script>
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/r/r.min.js">
+</script>
+  
 </head>
 <body>
 <main>
@@ -98,8 +153,24 @@ x * 2</textarea>
   import { WebR } from
     "https://webr.r-wasm.org/latest/webr.mjs";
 
-  const editor = document.getElementById("code");
-  const output = document.getElementById("output");
+
+const editor = CodeMirror.fromTextArea(
+  document.getElementById("code"),
+  {
+    mode: "r",
+    lineNumbers: true,
+    lineWrapping: true,
+    indentUnit: 2,
+    tabSize: 2,
+    indentWithTabs: false,
+    extraKeys: {
+      Tab: cm => cm.execCommand("insertSoftTab")
+    }
+  }
+);
+
+const output = document.getElementById("output");
+  
   const plots = document.getElementById("plots");
   const status = document.getElementById("status");
   const run = document.getElementById("run");
@@ -142,10 +213,10 @@ const initialCode = Object.hasOwn(exercises, exercise)
   : exercises.hello;
 
 // Display the selected code
-editor.value = initialCode;
+editor.setValue(initialCode);
 
   reset.onclick = () => {
-    editor.value = initialCode;
+    editor.setValue(initialCode);
     output.textContent = "Ready.";
   };
 
@@ -169,7 +240,7 @@ run.onclick = async () => {
 
   try {
     const result = await shelter.captureR(
-      editor.value,
+      editor.getValue(),
       {
         withAutoprint: true,
         captureGraphics: {
