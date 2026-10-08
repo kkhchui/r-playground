@@ -55,6 +55,22 @@
       margin-top: 12px;
     }
     #status { color: #4C566A; }
+    
+    #plots {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#plots canvas {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  border: 1px solid #D8DEE9;
+  border-radius: 6px;
+}
+    
   </style>
 </head>
 <body>
@@ -71,8 +87,11 @@ x * 2</textarea>
     <button id="run" disabled>Run Code</button>
   </div>
 
-  <h3>Console</h3>
-  <pre id="output">Initializing R...</pre>
+<h3>Console</h3>
+<pre id="output">Initializing R...</pre>
+
+<h3>Plots</h3>
+<div id="plots"></div>
 </main>
 
 <script type="module">
@@ -81,6 +100,7 @@ x * 2</textarea>
 
   const editor = document.getElementById("code");
   const output = document.getElementById("output");
+  const plots = document.getElementById("plots");
   const status = document.getElementById("status");
   const run = document.getElementById("run");
   const reset = document.getElementById("reset");
@@ -102,7 +122,14 @@ length(x)`,
   stats: `x <- c(10, 20, 30, 40)
 mean(x)
 sum(x)
-sd(x)`
+sd(x)`, 
+
+  histogram: `x <- rnorm(100)
+hist(x,
+     col = "#88C0D0",
+     border = "white",
+     main = "My First Histogram",
+     xlab = "Value")`
 };
 
 // Read the exercise name from the URL
@@ -134,29 +161,56 @@ editor.value = initialCode;
     output.textContent = "Ready.";
     run.disabled = false;
 
-    run.onclick = async () => {
-      run.disabled = true;
-      output.textContent = "Running...";
 
-      try {
-        const result = await shelter.captureR(
-          editor.value,
-          { withAutoprint: true }
-        );
+run.onclick = async () => {
+  run.disabled = true;
+  output.textContent = "Running...";
+  plots.replaceChildren();
 
-        const messages = result.output.map(
-          item => String(item.data)
-        );
-
-        output.textContent =
-          messages.join("\n") || "(No text output)";
-      } catch (error) {
-        output.textContent = String(error);
-      } finally {
-        await shelter.purge();
-        run.disabled = false;
+  try {
+    const result = await shelter.captureR(
+      editor.value,
+      {
+        withAutoprint: true,
+        captureGraphics: {
+          width: 600,
+          height: 400
+        }
       }
-    };
+    );
+
+    // Display console output
+    const messages = result.output.map(
+      item => String(item.data)
+    );
+
+    output.textContent =
+      messages.join("\n") || "(No text output)";
+
+    // Display captured R graphics
+    for (const image of result.images ?? []) {
+      const canvas = document.createElement("canvas");
+      canvas.width = image.width;
+      canvas.height = image.height;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(image, 0, 0);
+
+      plots.appendChild(canvas);
+    }
+
+    if (!result.images?.length) {
+      plots.textContent = "No plots generated.";
+    }
+
+  } catch (error) {
+    output.textContent = String(error);
+  } finally {
+    await shelter.purge();
+    run.disabled = false;
+  }
+};
+
   } catch (error) {
     status.textContent = "R failed to load.";
     output.textContent = String(error);
