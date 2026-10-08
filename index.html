@@ -105,6 +105,18 @@ sum(x)
 sd(x)`
 };
 
+// Read the exercise name from the URL
+const params = new URLSearchParams(window.location.search);
+const exercise = params.get("exercise") || "hello";
+
+// Select the exercise, defaulting to hello
+const initialCode = Object.hasOwn(exercises, exercise)
+  ? exercises[exercise]
+  : exercises.hello;
+
+// Display the selected code
+editor.value = initialCode;
+
   reset.onclick = () => {
     editor.value = initialCode;
     output.textContent = "Ready.";
