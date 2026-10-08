@@ -5,6 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>R Playground</title>
+
+  <!-- CodeMirror editor -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -33,7 +38,7 @@
       border: 1px solid #D8DEE9;
       min-height: 130px;
     }
-    pre {
+    #output {
       background: #2E3440;
       color: #ECEFF4;
       min-height: 65px;
@@ -134,10 +139,6 @@
     
   </style>
 
-<!-- CodeMirror editor -->
-<link rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-
 <script
   src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js">
 </script>
@@ -237,6 +238,7 @@ editor.setValue(initialCode);
   reset.onclick = () => {
     editor.setValue(initialCode);
     output.textContent = "Ready.";
+    plots.replaceChildren();
   };
 
   try {
