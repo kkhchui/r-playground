@@ -85,7 +85,25 @@ x * 2</textarea>
   const run = document.getElementById("run");
   const reset = document.getElementById("reset");
 
-  const initialCode = editor.value;
+// Exercise library
+const exercises = {
+  hello: `print("Hello, R!")`,
+
+  math: `2 + 3 * 4
+(2 + 3) * 4`,
+
+  objects: `x <- 10
+x * 2`,
+
+  vectors: `x <- c(10, 20, 30, 40)
+x
+length(x)`,
+
+  stats: `x <- c(10, 20, 30, 40)
+mean(x)
+sum(x)
+sd(x)`
+};
 
   reset.onclick = () => {
     editor.value = initialCode;
