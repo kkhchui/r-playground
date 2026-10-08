@@ -21,7 +21,7 @@
       border-radius: 12px;
     }
     h2 { margin-top: 0; }
-    textarea, pre {
+    textarea, #output {
       box-sizing: border-box;
       width: 100%;
       padding: 14px;
@@ -112,6 +112,25 @@
 .cm-s-default .cm-def      { color: #487C86; }
 .cm-s-default .cm-builtin  { color: #487C86; }
 .cm-s-default .cm-atom     { color: #8B6BA8; }
+
+/* Fix CodeMirror line spacing */
+.CodeMirror {
+  height: 180px;
+  line-height: 1.4;
+  font-size: 15px;
+}
+
+.CodeMirror pre.CodeMirror-line,
+.CodeMirror pre.CodeMirror-line-like {
+  padding: 0 4px;
+  margin: 0;
+  line-height: inherit;
+  min-height: 0;
+}
+
+.CodeMirror-code {
+  line-height: inherit;
+}
     
   </style>
 
